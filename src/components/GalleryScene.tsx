@@ -15,6 +15,7 @@ import {
   type WallSegment,
 } from "../galleryLayout";
 import type { ArtworkData, MoveInput } from "../types";
+import { getRenderQuality } from "../renderQuality";
 import { Artwork } from "./Artwork";
 import { PlayerController } from "./PlayerController";
 
@@ -190,12 +191,14 @@ function RoomA() {
 }
 
 export function GalleryScene({ moveInput, lookInput, isCoarsePointer }: GallerySceneProps) {
+  const renderQuality = getRenderQuality(isCoarsePointer);
+
   return (
     <Canvas
       camera={{ fov: 64, near: 0.08, far: 45 }}
-      dpr={isCoarsePointer ? [0.75, 1.25] : [1, 1.5]}
+      dpr={renderQuality.dpr}
       gl={{
-        antialias: !isCoarsePointer,
+        antialias: renderQuality.antialias,
         powerPreference: "high-performance",
         toneMapping: THREE.ACESFilmicToneMapping,
         outputColorSpace: THREE.SRGBColorSpace,

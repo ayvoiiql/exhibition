@@ -8,8 +8,9 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "prepare:room-a": "node scripts/prepare-stage1.mjs",
-    "validate:room-a": "node scripts/validate-stage1.mjs && node --test scripts/room-a-layout.test.mjs",
+    "validate:room-a": "node scripts/validate-stage1.mjs && node --test scripts/room-a-layout.test.mjs scripts/mobile-render-quality.test.mjs",
     "test:layout": "node --test scripts/room-a-layout.test.mjs",
+    "test:render-quality": "node --test scripts/mobile-render-quality.test.mjs",
     "prepare:stage1": "node scripts/prepare-stage1.mjs",
     "validate:stage1": "node scripts/validate-stage1.mjs",
     "typecheck": "tsc -b"

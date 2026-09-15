@@ -2,6 +2,7 @@ import { access, readFile } from "node:fs/promises";
 import path from "node:path";
 import sharp from "sharp";
 import * as THREE from "three";
+import { ARTWORK_MAX_DIMENSION } from "../src/renderQuality.ts";
 
 const root = process.cwd();
 const contentPath = path.join(root, "content", "artworks.json");
@@ -28,7 +29,7 @@ for (const artwork of artworks) {
   await access(imagePath);
   const metadata = await sharp(imagePath).metadata();
   if (!metadata.width || !metadata.height) throw new Error(`Unreadable image: ${imagePath}`);
-  if (Math.max(metadata.width, metadata.height) > 1280) {
+  if (Math.max(metadata.width, metadata.height) > ARTWORK_MAX_DIMENSION) {
     throw new Error(`Image exceeds the mobile limit: ${imagePath}`);
   }
 }

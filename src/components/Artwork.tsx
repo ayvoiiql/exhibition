@@ -1,6 +1,8 @@
 import { Text, useTexture } from "@react-three/drei";
+import { useThree } from "@react-three/fiber";
 import { useEffect, useMemo } from "react";
 import * as THREE from "three";
+import { FRAME_INNER_TRIM, getTextureAnisotropy } from "../renderQuality";
 import type { ArtworkData } from "../types";
 import { useGalleryStore } from "../store";
 
@@ -13,14 +15,15 @@ interface ArtworkProps {
 
 export function Artwork({ artwork, position, rotationY = 0, targetHeight = 1.82 }: ArtworkProps) {
   const texture = useTexture(artwork.image);
+  const { gl } = useThree();
   const selectArtwork = useGalleryStore((state) => state.selectArtwork);
   const focusedArtwork = useGalleryStore((state) => state.focusedArtwork);
 
   useEffect(() => {
     texture.colorSpace = THREE.SRGBColorSpace;
-    texture.anisotropy = 4;
+    texture.anisotropy = getTextureAnisotropy(gl.capabilities.getMaxAnisotropy());
     texture.needsUpdate = true;
-  }, [texture]);
+  }, [gl, texture]);
 
   const [width, height] = useMemo(() => {
     const image = texture.image as { width?: number; height?: number };
@@ -29,7 +32,7 @@ export function Artwork({ artwork, position, rotationY = 0, targetHeight = 1.82 
   }, [targetHeight, texture]);
 
   const frame = 0.09;
-  const innerTrim = 0.022;
+  const innerTrim = FRAME_INNER_TRIM;
   const active = focusedArtwork?.id === artwork.id;
   const frameColor = active ? "#d5b66f" : "#705936";
 

@@ -1,6 +1,10 @@
 import { mkdir } from "node:fs/promises";
 import path from "node:path";
 import sharp from "sharp";
+import {
+  ARTWORK_MAX_DIMENSION,
+  ARTWORK_WEBP_QUALITY,
+} from "../src/renderQuality.ts";
 
 const files = Array.from({ length: 8 }, (_, index) =>
   `artwork-a-${String(index + 1).padStart(2, "0")}.jpg`,
@@ -16,8 +20,13 @@ for (const file of files) {
 
   await sharp(source)
     .rotate()
-    .resize({ width: 1280, height: 1280, fit: "inside", withoutEnlargement: true })
-    .webp({ quality: 82, effort: 5 })
+    .resize({
+      width: ARTWORK_MAX_DIMENSION,
+      height: ARTWORK_MAX_DIMENSION,
+      fit: "inside",
+      withoutEnlargement: true,
+    })
+    .webp({ quality: ARTWORK_WEBP_QUALITY, effort: 5 })
     .toFile(output);
 
   const metadata = await sharp(output).metadata();
