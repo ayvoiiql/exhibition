@@ -1,0 +1,66 @@
+[
+  {
+    "id": "artwork-a-01",
+    "roomId": "A",
+    "order": 1,
+    "title": "작품 A-01",
+    "description": "작품 설명은 추후 업데이트됩니다.",
+    "image": "/artworks/artwork-a-01.webp"
+  },
+  {
+    "id": "artwork-a-02",
+    "roomId": "A",
+    "order": 2,
+    "title": "작품 A-02",
+    "description": "작품 설명은 추후 업데이트됩니다.",
+    "image": "/artworks/artwork-a-02.webp"
+  },
+  {
+    "id": "artwork-a-03",
+    "roomId": "A",
+    "order": 3,
+    "title": "작품 A-03",
+    "description": "작품 설명은 추후 업데이트됩니다.",
+    "image": "/artworks/artwork-a-03.webp"
+  },
+  {
+    "id": "artwork-a-04",
+    "roomId": "A",
+    "order": 4,
+    "title": "작품 A-04",
+    "description": "작품 설명은 추후 업데이트됩니다.",
+    "image": "/artworks/artwork-a-04.webp"
+  },
+  {
+    "id": "artwork-a-05",
+    "roomId": "A",
+    "order": 5,
+    "title": "작품 A-05",
+    "description": "작품 설명은 추후 업데이트됩니다.",
+    "image": "/artworks/artwork-a-05.webp"
+  },
+  {
+    "id": "artwork-a-06",
+    "roomId": "A",
+    "order": 6,
+    "title": "작품 A-06",
+    "description": "작품 설명은 추후 업데이트됩니다.",
+    "image": "/artworks/artwork-a-06.webp"
+  },
+  {
+    "id": "artwork-a-07",
+    "roomId": "A",
+    "order": 7,
+    "title": "작품 A-07",
+    "description": "작품 설명은 추후 업데이트됩니다.",
+    "image": "/artworks/artwork-a-07.webp"
+  },
+  {
+    "id": "artwork-a-08",
+    "roomId": "A",
+    "order": 8,
+    "title": "작품 A-08",
+    "description": "작품 설명은 추후 업데이트됩니다.",
+    "image": "/artworks/artwork-a-08.webp"
+  }
+]
