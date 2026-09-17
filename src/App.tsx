@@ -27,6 +27,7 @@ export default function App() {
   const setStarted = useGalleryStore((state) => state.setStarted);
   const selectedArtwork = useGalleryStore((state) => state.selectedArtwork);
   const focusedArtwork = useGalleryStore((state) => state.focusedArtwork);
+  const currentRoom = useGalleryStore((state) => state.currentRoom);
   const isCoarsePointer = useCoarsePointer();
   const moveInput = useRef<MoveInput>({ x: 0, y: 0 });
   const lookInput = useRef<MoveInput>({ x: 0, y: 0 });
@@ -57,10 +58,10 @@ export default function App() {
 
       <div className="top-hud">
         <div>
-          <p className="eyebrow">3D ONLINE EXHIBITION · ROOM A</p>
-          <h1>ROOM A</h1>
+          <p className="eyebrow">3D ONLINE EXHIBITION · ROOM {currentRoom}</p>
+          <h1>ROOM {currentRoom}</h1>
         </div>
-        <span className="stage-badge">ROOM A · 8 WORKS</span>
+        <span className="stage-badge">ROOM {currentRoom} · 8 WORKS</span>
       </div>
 
       {started && !selectedArtwork && <div className={`reticle ${focusedArtwork ? "is-active" : ""}`} />}
@@ -73,7 +74,7 @@ export default function App() {
           <p className="eyebrow">딥 네이비 갤러리</p>
           <h2>온라인 가상 전시</h2>
           <p className="entry-description">
-            작품 수에 맞춘 벽 구성과 ROOM B 연결 통로가 있는 ROOM A에서 여덟 점의 작품을 감상해 보세요.
+            서로 연결된 ROOM A, ROOM B와 ROOM C에서 스물네 점의 작품을 감상해 보세요.
           </p>
           <div className="control-summary">
             <span>{isCoarsePointer ? "왼쪽 조이스틱 · 이동" : "W/S·↑/↓ · 전진/후진"}</span>

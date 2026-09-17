@@ -62,5 +62,133 @@
     "title": "작품 A-08",
     "description": "작품 설명은 추후 업데이트됩니다.",
     "image": "/artworks/artwork-a-08.webp"
+  },
+  {
+    "id": "artwork-b-01",
+    "roomId": "B",
+    "order": 1,
+    "title": "작품 B-01",
+    "description": "ROOM B 임시 작품 설명입니다.",
+    "image": "/artworks/artwork-b-01.webp"
+  },
+  {
+    "id": "artwork-b-02",
+    "roomId": "B",
+    "order": 2,
+    "title": "작품 B-02",
+    "description": "ROOM B 임시 작품 설명입니다.",
+    "image": "/artworks/artwork-b-02.webp"
+  },
+  {
+    "id": "artwork-b-03",
+    "roomId": "B",
+    "order": 3,
+    "title": "작품 B-03",
+    "description": "ROOM B 임시 작품 설명입니다.",
+    "image": "/artworks/artwork-b-03.webp"
+  },
+  {
+    "id": "artwork-b-04",
+    "roomId": "B",
+    "order": 4,
+    "title": "작품 B-04",
+    "description": "ROOM B 임시 작품 설명입니다.",
+    "image": "/artworks/artwork-b-04.webp"
+  },
+  {
+    "id": "artwork-b-05",
+    "roomId": "B",
+    "order": 5,
+    "title": "작품 B-05",
+    "description": "ROOM B 임시 작품 설명입니다.",
+    "image": "/artworks/artwork-b-05.webp"
+  },
+  {
+    "id": "artwork-b-06",
+    "roomId": "B",
+    "order": 6,
+    "title": "작품 B-06",
+    "description": "ROOM B 임시 작품 설명입니다.",
+    "image": "/artworks/artwork-b-06.webp"
+  },
+  {
+    "id": "artwork-b-07",
+    "roomId": "B",
+    "order": 7,
+    "title": "작품 B-07",
+    "description": "ROOM B 임시 작품 설명입니다.",
+    "image": "/artworks/artwork-b-07.webp"
+  },
+  {
+    "id": "artwork-b-08",
+    "roomId": "B",
+    "order": 8,
+    "title": "작품 B-08",
+    "description": "ROOM B 임시 작품 설명입니다.",
+    "image": "/artworks/artwork-b-08.webp"
+  },
+  {
+    "id": "artwork-c-01",
+    "roomId": "C",
+    "order": 1,
+    "title": "작품 C-01",
+    "description": "ROOM C 임시 작품 설명입니다.",
+    "image": "/artworks/artwork-c-01.webp"
+  },
+  {
+    "id": "artwork-c-02",
+    "roomId": "C",
+    "order": 2,
+    "title": "작품 C-02",
+    "description": "ROOM C 임시 작품 설명입니다.",
+    "image": "/artworks/artwork-c-02.webp"
+  },
+  {
+    "id": "artwork-c-03",
+    "roomId": "C",
+    "order": 3,
+    "title": "작품 C-03",
+    "description": "ROOM C 임시 작품 설명입니다.",
+    "image": "/artworks/artwork-c-03.webp"
+  },
+  {
+    "id": "artwork-c-04",
+    "roomId": "C",
+    "order": 4,
+    "title": "작품 C-04",
+    "description": "ROOM C 임시 작품 설명입니다.",
+    "image": "/artworks/artwork-c-04.webp"
+  },
+  {
+    "id": "artwork-c-05",
+    "roomId": "C",
+    "order": 5,
+    "title": "작품 C-05",
+    "description": "ROOM C 임시 작품 설명입니다.",
+    "image": "/artworks/artwork-c-05.webp"
+  },
+  {
+    "id": "artwork-c-06",
+    "roomId": "C",
+    "order": 6,
+    "title": "작품 C-06",
+    "description": "ROOM C 임시 작품 설명입니다.",
+    "image": "/artworks/artwork-c-06.webp"
+  },
+  {
+    "id": "artwork-c-07",
+    "roomId": "C",
+    "order": 7,
+    "title": "작품 C-07",
+    "description": "ROOM C 임시 작품 설명입니다.",
+    "image": "/artworks/artwork-c-07.webp"
+  },
+  {
+    "id": "artwork-c-08",
+    "roomId": "C",
+    "order": 8,
+    "title": "작품 C-08",
+    "description": "ROOM C 임시 작품 설명입니다.",
+    "image": "/artworks/artwork-c-08.webp"
   }
 ]

@@ -3,7 +3,11 @@ import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import type { MoveInput } from "../types";
 import { useGalleryStore } from "../store";
-import { roomACollisionBlocks, roomAWalkablePolygon } from "../galleryLayout";
+import {
+  galleryCollisionBlocks,
+  galleryWalkablePolygons,
+  getRoomIdAt,
+} from "../galleryLayout";
 
 interface PlayerControllerProps {
   moveInput: React.RefObject<MoveInput>;
@@ -15,11 +19,11 @@ const DRAG_SENSITIVITY = 0.003;
 const KEYBOARD_TURN_SPEED = 1.65;
 const TURN_SMOOTHING = 14;
 
-function pointInPolygon(x: number, z: number) {
+function pointInPolygon(x: number, z: number, polygon: [number, number][]) {
   let inside = false;
-  for (let index = 0, previous = roomAWalkablePolygon.length - 1; index < roomAWalkablePolygon.length; previous = index++) {
-    const [xi, zi] = roomAWalkablePolygon[index];
-    const [xj, zj] = roomAWalkablePolygon[previous];
+  for (let index = 0, previous = polygon.length - 1; index < polygon.length; previous = index++) {
+    const [xi, zi] = polygon[index];
+    const [xj, zj] = polygon[previous];
     const crosses = zi > z !== zj > z && x < ((xj - xi) * (z - zi)) / (zj - zi) + xi;
     if (crosses) inside = !inside;
   }
@@ -27,8 +31,8 @@ function pointInPolygon(x: number, z: number) {
 }
 
 function isWalkable(x: number, z: number) {
-  if (!pointInPolygon(x, z)) return false;
-  return !roomACollisionBlocks.some(
+  if (!galleryWalkablePolygons.some((polygon) => pointInPolygon(x, z, polygon))) return false;
+  return !galleryCollisionBlocks.some(
     (block) => x >= block.minX && x <= block.maxX && z >= block.minZ && z <= block.maxZ,
   );
 }
@@ -39,6 +43,7 @@ export function PlayerController({ moveInput, lookInput, isCoarsePointer }: Play
   const selectedArtwork = useGalleryStore((state) => state.selectedArtwork);
   const selectArtwork = useGalleryStore((state) => state.selectArtwork);
   const setFocusedArtwork = useGalleryStore((state) => state.setFocusedArtwork);
+  const setCurrentRoom = useGalleryStore((state) => state.setCurrentRoom);
   const yaw = useRef(0);
   const targetYaw = useRef(0);
   const keys = useRef(new Set<string>());
@@ -152,8 +157,14 @@ export function PlayerController({ moveInput, lookInput, isCoarsePointer }: Play
     raycaster.current.far = 10.5;
     const hit = raycaster.current
       .intersectObjects(scene.children, true)
-      .find((intersection) => intersection.object.userData.artworkId);
+      .find(
+        (intersection) =>
+          intersection.object.userData.artworkId || intersection.object.userData.blocksArtworkRay,
+      );
     setFocusedArtwork(hit?.object.userData.artwork ?? null);
+
+    const currentRoom = getRoomIdAt(camera.position.x, camera.position.z);
+    if (useGalleryStore.getState().currentRoom !== currentRoom) setCurrentRoom(currentRoom);
   });
 
   return null;

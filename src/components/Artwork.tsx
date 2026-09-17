@@ -3,6 +3,7 @@ import { useThree } from "@react-three/fiber";
 import { useEffect, useMemo } from "react";
 import * as THREE from "three";
 import { FRAME_INNER_TRIM, getTextureAnisotropy } from "../renderQuality";
+import { ROOM_A_MATERIALS } from "../galleryLayout";
 import type { ArtworkData } from "../types";
 import { useGalleryStore } from "../store";
 
@@ -11,9 +12,16 @@ interface ArtworkProps {
   position: [number, number, number];
   rotationY?: number;
   targetHeight?: number;
+  materialStyle?: "default" | "roomA";
 }
 
-export function Artwork({ artwork, position, rotationY = 0, targetHeight = 1.82 }: ArtworkProps) {
+export function Artwork({
+  artwork,
+  position,
+  rotationY = 0,
+  targetHeight = 1.82,
+  materialStyle = "default",
+}: ArtworkProps) {
   const texture = useTexture(artwork.image);
   const { gl } = useThree();
   const selectArtwork = useGalleryStore((state) => state.selectArtwork);
@@ -34,7 +42,17 @@ export function Artwork({ artwork, position, rotationY = 0, targetHeight = 1.82 
   const frame = 0.09;
   const innerTrim = FRAME_INNER_TRIM;
   const active = focusedArtwork?.id === artwork.id;
-  const frameColor = active ? "#d5b66f" : "#705936";
+  const usesRoomAMaterials = materialStyle === "roomA";
+  const frameColor = usesRoomAMaterials
+    ? active ? ROOM_A_MATERIALS.frame.activeColor : ROOM_A_MATERIALS.frame.color
+    : active ? "#d5b66f" : "#705936";
+  const frameMetalness = usesRoomAMaterials
+    ? ROOM_A_MATERIALS.frame.metalness
+    : active ? 0.5 : 0.12;
+  const frameRoughness = usesRoomAMaterials ? ROOM_A_MATERIALS.frame.roughness : 0.4;
+  const trimMaterial = usesRoomAMaterials
+    ? ROOM_A_MATERIALS.frameTrim
+    : { color: "#d0ad68", metalness: 0.76, roughness: 0.25 };
 
   return (
     <group position={position} rotation={[0, rotationY, 0]}>
@@ -67,36 +85,36 @@ export function Artwork({ artwork, position, rotationY = 0, targetHeight = 1.82 
 
       <mesh position={[0, height / 2 + 0.08 + frame / 2, 0.065]}>
         <boxGeometry args={[width + 0.16 + frame * 2, frame, 0.14]} />
-        <meshStandardMaterial color={frameColor} metalness={active ? 0.5 : 0.12} roughness={0.4} />
+        <meshStandardMaterial color={frameColor} metalness={frameMetalness} roughness={frameRoughness} />
       </mesh>
       <mesh position={[0, -height / 2 - 0.08 - frame / 2, 0.065]}>
         <boxGeometry args={[width + 0.16 + frame * 2, frame, 0.14]} />
-        <meshStandardMaterial color={frameColor} metalness={active ? 0.5 : 0.12} roughness={0.4} />
+        <meshStandardMaterial color={frameColor} metalness={frameMetalness} roughness={frameRoughness} />
       </mesh>
       <mesh position={[-width / 2 - 0.08 - frame / 2, 0, 0.065]}>
         <boxGeometry args={[frame, height + 0.16, 0.14]} />
-        <meshStandardMaterial color={frameColor} metalness={active ? 0.5 : 0.12} roughness={0.4} />
+        <meshStandardMaterial color={frameColor} metalness={frameMetalness} roughness={frameRoughness} />
       </mesh>
       <mesh position={[width / 2 + 0.08 + frame / 2, 0, 0.065]}>
         <boxGeometry args={[frame, height + 0.16, 0.14]} />
-        <meshStandardMaterial color={frameColor} metalness={active ? 0.5 : 0.12} roughness={0.4} />
+        <meshStandardMaterial color={frameColor} metalness={frameMetalness} roughness={frameRoughness} />
       </mesh>
 
       <mesh position={[0, height / 2 + innerTrim / 2, 0.155]}>
         <boxGeometry args={[width + innerTrim * 2, innerTrim, 0.025]} />
-        <meshStandardMaterial color="#d0ad68" metalness={0.76} roughness={0.25} />
+        <meshStandardMaterial {...trimMaterial} />
       </mesh>
       <mesh position={[0, -height / 2 - innerTrim / 2, 0.155]}>
         <boxGeometry args={[width + innerTrim * 2, innerTrim, 0.025]} />
-        <meshStandardMaterial color="#d0ad68" metalness={0.76} roughness={0.25} />
+        <meshStandardMaterial {...trimMaterial} />
       </mesh>
       <mesh position={[-width / 2 - innerTrim / 2, 0, 0.155]}>
         <boxGeometry args={[innerTrim, height, 0.025]} />
-        <meshStandardMaterial color="#d0ad68" metalness={0.76} roughness={0.25} />
+        <meshStandardMaterial {...trimMaterial} />
       </mesh>
       <mesh position={[width / 2 + innerTrim / 2, 0, 0.155]}>
         <boxGeometry args={[innerTrim, height, 0.025]} />
-        <meshStandardMaterial color="#d0ad68" metalness={0.76} roughness={0.25} />
+        <meshStandardMaterial {...trimMaterial} />
       </mesh>
 
       <Text
