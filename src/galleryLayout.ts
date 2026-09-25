@@ -8,6 +8,8 @@ export interface WallSegment {
   color: string;
   interiorSign: 1 | -1;
   kind?: "gallery" | "connector" | "partition";
+  thickness?: number;
+  hideMolding?: boolean;
   moldingBothSides?: boolean;
   moldingNegativeExtension?: number;
   moldingPositiveExtension?: number;
@@ -29,6 +31,10 @@ export const ROOM_B_DEPTH = 11.1;
 export const ROOM_B_FRONT_Z = -5.7;
 export const ROOM_C_WIDTH = 10.8;
 export const ROOM_C_DEPTH = 10.2;
+export const ROOM_C_HEIGHT = 4.8;
+export const ROOM_C_CEILING_Y = ROOM_C_HEIGHT + 0.08;
+export const ROOM_C_TRACK_Y = ROOM_C_HEIGHT - 0.07;
+export const ROOM_C_LIGHT_MOUNT_Y = ROOM_C_HEIGHT - 0.08;
 export const ROOM_C_RIGHT_X = -5.9;
 export const ROOM_C_FRONT_Z = -10.2;
 export const ROOM_C_BACK_Z = -20.4;
@@ -43,22 +49,22 @@ export const ROOM_A_MOLDING_PROFILE = [
   { y: 0.1325, height: 0.035 },
 ] as const;
 export const GALLERY_SURFACE_COLORS = {
-  frontWall: "#4b6679",
-  sideWall: "#536d81",
-  backWall: "#5e788d",
+  frontWall: "#3c5d7d",
+  sideWall: "#476c8c",
+  backWall: "#3c5d7d",
   floor: "#454a4d",
   corridorFloor: "#3f484c",
 } as const;
 export const ROOM_A_MATERIALS = {
   mainWall: {
-    color: "#34516d",
+    color: "#3c5d7d",
     roughness: 0.74,
     metalness: 0,
     clearcoat: 0.04,
     clearcoatRoughness: 0.82,
   },
   secondaryWall: {
-    color: "#3e5e7a",
+    color: "#476c8c",
     roughness: 0.74,
     metalness: 0,
     clearcoat: 0.04,
@@ -100,29 +106,126 @@ export const ROOM_A_TEXTURES = {
   wallRepeatMeters: 6,
   floorRepeatMeters: 3,
 } as const;
+
+export const ROOM_B_MATERIALS = {
+  floor: {
+    color: "#ffffff",
+    roughness: 0.74,
+    metalness: 0,
+  },
+} as const;
+
+export const ROOM_B_TEXTURES = {
+  floor: "/materials/room-b-walnut-floor-light.webp",
+  floorRepeatMeters: 4.8,
+} as const;
+
+export const ROOM_C_MATERIALS = {
+  wall: {
+    color: "#ffffff",
+    roughness: 1,
+    metalness: 0,
+  },
+  floor: {
+    color: "#ffffff",
+    roughness: 0.81,
+    metalness: 0,
+  },
+  ceiling: {
+    color: "#ece2d3",
+    emissive: "#ece2d3",
+    emissiveIntensity: 0.5,
+    roughness: 0.9,
+    metalness: 0,
+  },
+  baseboard: [
+    { color: "#5e5650", roughness: 0.86, metalness: 0 },
+  ],
+  track: {
+    color: "#202326",
+    roughness: 0.58,
+    metalness: 0.34,
+  },
+  spotlightHousing: {
+    color: "#202326",
+    roughness: 0.5,
+    metalness: 0.32,
+  },
+} as const;
+
+export const ROOM_C_TEXTURES = {
+  floorAlbedo: "/materials/room-c-muted-oak-albedo-1k.jpg",
+  floorNormal: "/materials/room-c-muted-oak-normal-gl-1k.jpg",
+  floorRoughness: "/materials/room-c-muted-oak-roughness-1k.jpg",
+  floorRepeatMeters: 2.7,
+  floorNormalScale: 0.12,
+  wallAlbedo: "/materials/room-c-clean-mineral-wall-albedo-1k.jpg",
+  wallNormal: "/materials/room-c-clean-mineral-wall-normal-gl-1k.jpg",
+  wallRoughness: "/materials/room-c-clean-mineral-wall-roughness-1k.jpg",
+  wallRepeatMeters: 1,
+  wallNormalScale: 0.05,
+} as const;
+
+export const ROOM_C_BASEBOARD_PROFILE = [
+  { y: 0.035, height: 0.07, depth: 0.03 },
+] as const;
+
+export const ROOM_C_LIGHTING = {
+  spotlight: {
+    color: "#f6ead8",
+    heroIntensity: 7.4,
+    standardIntensity: 6.3,
+    distance: 7.5,
+    heroAngle: 1.38,
+    standardAngle: 1.32,
+    penumbra: 1,
+    decay: 1.2,
+  },
+} as const;
+
 export const ROOM_A_LIGHTING = {
   hemisphere: {
     skyColor: "#b7cde0",
     groundColor: "#2b4055",
-    intensity: 1.35,
+    intensity: 2,
   },
-  directional: { color: "#c7d9e6", intensity: 0.62 },
+  directional: { color: "#c7d9e6", intensity: 0.75 },
   spotlight: {
     color: "#fff0d2",
-    heroIntensity: 29,
-    standardIntensity: 24,
+    heroIntensity: 22,
+    standardIntensity: 18,
     distance: 6.4,
-    heroAngle: 0.62,
-    standardAngle: 0.57,
+    heroAngle: 0.76,
+    standardAngle: 0.72,
     penumbra: 0.94,
     decay: 1.25,
   },
 } as const;
-export const ROOM_A_PORTAL_TRIM_MATERIAL = {
-  color: "#091522",
-  roughness: 0.76,
-  metalness: 0.02,
-} as const;
+
+export function getSpotlightFixtureTransform(
+  lightPosition: Vec3,
+  targetPosition: Vec3,
+  mountHeight = ROOM_HEIGHT - 0.08,
+) {
+  const [lightX, lightY, lightZ] = lightPosition;
+  const deltaX = targetPosition[0] - lightX;
+  const deltaY = targetPosition[1] - lightY;
+  const deltaZ = targetPosition[2] - lightZ;
+  const distance = Math.hypot(deltaX, deltaY, deltaZ) || 1;
+  const direction: Vec3 = [deltaX / distance, deltaY / distance, deltaZ / distance];
+  const lensOffset = 0.31;
+
+  return {
+    pivotPosition: [...lightPosition] as Vec3,
+    direction,
+    lensPosition: [
+      lightX + direction[0] * lensOffset,
+      lightY + direction[1] * lensOffset,
+      lightZ + direction[2] * lensOffset,
+    ] as Vec3,
+    stemHeight: Math.max(0.08, mountHeight - lightY),
+  };
+}
 
 export function getMoldingCenterOffset(depth: number) {
   return WALL_THICKNESS / 2 + depth / 2 - 0.012;
@@ -151,33 +254,35 @@ export const roomAConnection = {
   status: "connected" as const,
 };
 
-export function getRoomAPortalTrimPieces() {
-  const trimWidth = 0.14;
-  const trimDepth = 0.045;
-  const openingHeight = 3.52;
-  const wallFaceZ = -4.288;
-  const openingLeft = roomAConnection.center[0] - roomAConnection.openingWidth / 2;
-  const openingRight = roomAConnection.center[0] + roomAConnection.openingWidth / 2;
-  const round = (value: number) => Number(value.toFixed(3));
+export function getWayfindingFontSize(
+  label: string,
+  maxWidth: number,
+  preferredFontSize: number,
+) {
+  const estimatedWidth = label.length * preferredFontSize * 0.72;
 
-  return [
-    {
-      id: "left",
-      position: [round(openingLeft - trimWidth / 2), openingHeight / 2, wallFaceZ] as Vec3,
-      size: [trimWidth, openingHeight, trimDepth] as Vec3,
-    },
-    {
-      id: "right",
-      position: [round(openingRight + trimWidth / 2), openingHeight / 2, wallFaceZ] as Vec3,
-      size: [trimWidth, openingHeight, trimDepth] as Vec3,
-    },
-    {
-      id: "top",
-      position: [roomAConnection.center[0], openingHeight + trimWidth / 2, wallFaceZ] as Vec3,
-      size: [round(roomAConnection.openingWidth + trimWidth * 2), trimWidth, trimDepth] as Vec3,
-    },
-  ];
+  if (estimatedWidth <= maxWidth) return preferredFontSize;
+  return Math.max(0.12, maxWidth / (label.length * 0.72));
 }
+
+export const roomAWayfindingSign = {
+  label: "B",
+  position: [roomAConnection.center[0], 3.85, -4.316] as Vec3,
+  rotationY: 0,
+  preferredFontSize: 0.26,
+  maxWidth: 1.8,
+  textDepth: 0.014,
+  textLayerCount: 5,
+  textSideOutlineWidth: 0.004,
+  frontColor: "#ffe3a6",
+  sideColor: "#705832",
+  linePosition: [roomAConnection.center[0], 3.529, -4.307] as Vec3,
+  lineWidth: roomAConnection.openingWidth,
+  lineHousingHeight: 0.032,
+  lineHousingDepth: 0.012,
+  lineFaceHeight: 0.012,
+  lineFaceDepth: 0.002,
+};
 
 // 룸 A는 한 작품용 피처 벽과 다음 방으로 이어질 개구부만 변주한 절제된 직사각형 평면입니다.
 export const roomAWalls: WallSegment[] = [
@@ -267,42 +372,42 @@ export const galleryMoldingCorners = [
     position: [roomAConnection.center[0] - roomAConnection.openingWidth / 2, ROOM_B_FRONT_Z] as const,
     xSign: 1 as const,
     zSign: -1 as const,
-    materialStyle: "default" as const,
+    materialStyle: "roomA" as const,
   },
   {
     id: "a-b-room-b-right",
     position: [roomAConnection.center[0] + roomAConnection.openingWidth / 2, ROOM_B_FRONT_Z] as const,
     xSign: -1 as const,
     zSign: -1 as const,
-    materialStyle: "default" as const,
+    materialStyle: "roomA" as const,
   },
   {
     id: "b-c-room-b-front",
     position: [-4.65, -13.8] as const,
     xSign: 1 as const,
     zSign: -1 as const,
-    materialStyle: "default" as const,
+    materialStyle: "roomA" as const,
   },
   {
     id: "b-c-room-b-back",
     position: [-4.65, -16.8] as const,
     xSign: 1 as const,
     zSign: 1 as const,
-    materialStyle: "default" as const,
+    materialStyle: "roomA" as const,
   },
   {
     id: "b-c-room-c-front",
     position: [ROOM_C_RIGHT_X, -13.8] as const,
     xSign: -1 as const,
     zSign: -1 as const,
-    materialStyle: "default" as const,
+    materialStyle: "roomC" as const,
   },
   {
     id: "b-c-room-c-back",
     position: [ROOM_C_RIGHT_X, -16.8] as const,
     xSign: -1 as const,
     zSign: 1 as const,
-    materialStyle: "default" as const,
+    materialStyle: "roomC" as const,
   },
 ] as const;
 
@@ -479,13 +584,14 @@ export const roomBWalls: WallSegment[] = [
   },
   {
     id: "room-b-partition",
-    position: [1.55, 2.1, -9],
+    position: [1.55, 2.1, -10.2],
     length: 3.8,
     rotationY: 0,
     color: GALLERY_SURFACE_COLORS.sideWall,
     interiorSign: 1,
     kind: "partition",
-    moldingBothSides: true,
+    thickness: 0.32,
+    hideMolding: true,
   },
 ];
 
@@ -549,12 +655,25 @@ export const roomBArtworkPlacements: ArtworkPlacement[] = [
   {
     id: "artwork-b-08",
     wallId: "room-b-partition",
-    position: [1.55, 1.88, -8.88],
+    position: [1.55, 1.88, -10],
     rotationY: 0,
     height: 2.05,
-    lightPosition: [1.55, 3.94, -7.05],
+    lightPosition: [1.55, 3.94, -8.25],
   },
 ];
+
+export const roomBWallQuote = {
+  wallId: "room-b-front-left",
+  lines: ["THE IMAGE LINGERS", "AFTER THE EYES", "HAVE MOVED ON."],
+  position: [-2.15, 2.02, -5.784] as Vec3,
+  rotationY: Math.PI,
+  width: 2.4,
+  fontSize: 0.15,
+  lineHeight: 1.46,
+  letterSpacing: 0.075,
+  insetColor: "#637a8c",
+  bevelColor: "#b4c0c8",
+};
 
 export const roomBWalkablePolygon: [number, number][] = [
   [-4.2, -6.15],
@@ -578,8 +697,8 @@ export const roomBCollisionBlocks: Array<{
   {
     minX: -0.8,
     maxX: 3.9,
-    minZ: -9.53,
-    maxZ: -8.47,
+    minZ: -10.73,
+    maxZ: -9.67,
   },
 ];
 
@@ -588,43 +707,43 @@ export const roomCCenter: Vec3 = [-11.3, 0, -15.3];
 export const roomCWalls: WallSegment[] = [
   {
     id: "room-c-front",
-    position: [roomCCenter[0], 2.1, ROOM_C_FRONT_Z],
+    position: [roomCCenter[0], ROOM_C_HEIGHT / 2, ROOM_C_FRONT_Z],
     length: ROOM_C_WIDTH,
     rotationY: 0,
-    color: GALLERY_SURFACE_COLORS.frontWall,
+    color: ROOM_C_MATERIALS.wall.color,
     interiorSign: -1,
   },
   {
     id: "room-c-back",
-    position: [roomCCenter[0], 2.1, ROOM_C_BACK_Z],
+    position: [roomCCenter[0], ROOM_C_HEIGHT / 2, ROOM_C_BACK_Z],
     length: ROOM_C_WIDTH,
     rotationY: 0,
-    color: GALLERY_SURFACE_COLORS.backWall,
+    color: ROOM_C_MATERIALS.wall.color,
     interiorSign: 1,
   },
   {
     id: "room-c-left",
-    position: [-16.7, 2.1, roomCCenter[2]],
+    position: [-16.7, ROOM_C_HEIGHT / 2, roomCCenter[2]],
     length: ROOM_C_DEPTH,
     rotationY: Math.PI / 2,
-    color: GALLERY_SURFACE_COLORS.sideWall,
+    color: ROOM_C_MATERIALS.wall.color,
     interiorSign: 1,
   },
   {
     id: "room-c-right-front",
-    position: [ROOM_C_RIGHT_X, 2.1, -12],
+    position: [ROOM_C_RIGHT_X, ROOM_C_HEIGHT / 2, -12],
     length: 3.6,
     rotationY: Math.PI / 2,
-    color: GALLERY_SURFACE_COLORS.sideWall,
+    color: ROOM_C_MATERIALS.wall.color,
     interiorSign: -1,
     moldingPositiveExtension: 0,
   },
   {
     id: "room-c-right-back",
-    position: [ROOM_C_RIGHT_X, 2.1, -18.6],
+    position: [ROOM_C_RIGHT_X, ROOM_C_HEIGHT / 2, -18.6],
     length: 3.6,
     rotationY: Math.PI / 2,
-    color: GALLERY_SURFACE_COLORS.sideWall,
+    color: ROOM_C_MATERIALS.wall.color,
     interiorSign: -1,
     moldingNegativeExtension: 0,
   },
@@ -637,7 +756,7 @@ export const roomCArtworkPlacements: ArtworkPlacement[] = [
     position: [-16.58, 1.95, -15.3],
     rotationY: Math.PI / 2,
     height: 2.65,
-    lightPosition: [-14.55, 4.02, -15.3],
+    lightPosition: [-14.55, 4.62, -15.3],
   },
   {
     id: "artwork-c-02",
@@ -645,7 +764,7 @@ export const roomCArtworkPlacements: ArtworkPlacement[] = [
     position: [-13.4, 1.78, -20.28],
     rotationY: 0,
     height: 1.8,
-    lightPosition: [-13.4, 3.82, -18.25],
+    lightPosition: [-13.4, 4.42, -18.25],
   },
   {
     id: "artwork-c-03",
@@ -653,7 +772,7 @@ export const roomCArtworkPlacements: ArtworkPlacement[] = [
     position: [-9.2, 1.78, -20.28],
     rotationY: 0,
     height: 1.8,
-    lightPosition: [-9.2, 3.82, -18.25],
+    lightPosition: [-9.2, 4.42, -18.25],
   },
   {
     id: "artwork-c-04",
@@ -661,7 +780,7 @@ export const roomCArtworkPlacements: ArtworkPlacement[] = [
     position: [-6.02, 1.7, -18.6],
     rotationY: -Math.PI / 2,
     height: 1.35,
-    lightPosition: [-8, 3.72, -18.6],
+    lightPosition: [-8, 4.32, -18.6],
   },
   {
     id: "artwork-c-05",
@@ -669,7 +788,7 @@ export const roomCArtworkPlacements: ArtworkPlacement[] = [
     position: [-14.4, 1.75, -10.32],
     rotationY: Math.PI,
     height: 1.5,
-    lightPosition: [-14.4, 3.82, -12.2],
+    lightPosition: [-14.4, 4.42, -12.2],
   },
   {
     id: "artwork-c-08",
@@ -677,7 +796,7 @@ export const roomCArtworkPlacements: ArtworkPlacement[] = [
     position: [-11.3, 1.75, -10.32],
     rotationY: Math.PI,
     height: 1.5,
-    lightPosition: [-11.3, 3.82, -12.2],
+    lightPosition: [-11.3, 4.42, -12.2],
   },
   {
     id: "artwork-c-06",
@@ -685,7 +804,7 @@ export const roomCArtworkPlacements: ArtworkPlacement[] = [
     position: [-8.2, 1.75, -10.32],
     rotationY: Math.PI,
     height: 1.5,
-    lightPosition: [-8.2, 3.82, -12.2],
+    lightPosition: [-8.2, 4.42, -12.2],
   },
   {
     id: "artwork-c-07",
@@ -693,7 +812,7 @@ export const roomCArtworkPlacements: ArtworkPlacement[] = [
     position: [-6.02, 1.7, -12],
     rotationY: -Math.PI / 2,
     height: 1.35,
-    lightPosition: [-8, 3.72, -12],
+    lightPosition: [-8, 4.32, -12],
   },
 ];
 

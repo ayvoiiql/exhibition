@@ -8,6 +8,7 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "prepare:room-a": "node scripts/prepare-stage1.mjs",
+    "generate:room-a-lightmaps": "node scripts/generate-room-a-lightmaps.mjs",
     "prepare:room-b": "node scripts/prepare-room-b.mjs",
     "prepare:room-c": "node scripts/prepare-room-c.mjs",
     "validate:room-a": "node scripts/validate-stage1.mjs && node --test scripts/room-a-layout.test.mjs scripts/mobile-render-quality.test.mjs",

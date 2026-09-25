@@ -13,6 +13,7 @@ interface PlayerControllerProps {
   moveInput: React.RefObject<MoveInput>;
   lookInput: React.RefObject<MoveInput>;
   isCoarsePointer: boolean;
+  interactionBlocked: boolean;
 }
 
 const DRAG_SENSITIVITY = 0.003;
@@ -37,7 +38,12 @@ function isWalkable(x: number, z: number) {
   );
 }
 
-export function PlayerController({ moveInput, lookInput, isCoarsePointer }: PlayerControllerProps) {
+export function PlayerController({
+  moveInput,
+  lookInput,
+  isCoarsePointer,
+  interactionBlocked,
+}: PlayerControllerProps) {
   const { camera, gl, scene } = useThree();
   const started = useGalleryStore((state) => state.started);
   const selectedArtwork = useGalleryStore((state) => state.selectedArtwork);
@@ -59,7 +65,29 @@ export function PlayerController({ moveInput, lookInput, isCoarsePointer }: Play
   }, [camera]);
 
   useEffect(() => {
+    if (started && !interactionBlocked) return;
+    keys.current.clear();
+    moveInput.current.x = 0;
+    moveInput.current.y = 0;
+    lookInput.current.x = 0;
+    lookInput.current.y = 0;
+    if (dragPointer.current !== null) {
+      const pointerId = dragPointer.current;
+      if (gl.domElement.hasPointerCapture(pointerId)) {
+        gl.domElement.releasePointerCapture(pointerId);
+      }
+      dragPointer.current = null;
+      gl.domElement.style.cursor = "";
+    }
+  }, [gl.domElement, interactionBlocked, lookInput, moveInput, started]);
+
+  useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
+      if (!useGalleryStore.getState().started || interactionBlocked) {
+        keys.current.clear();
+        return;
+      }
+
       keys.current.add(event.code);
       if (event.code === "KeyE") {
         const artwork = useGalleryStore.getState().focusedArtwork;
@@ -69,14 +97,20 @@ export function PlayerController({ moveInput, lookInput, isCoarsePointer }: Play
     const onKeyUp = (event: KeyboardEvent) => keys.current.delete(event.code);
     const onPointerDown = (event: PointerEvent) => {
       const state = useGalleryStore.getState();
-      if (isCoarsePointer || event.button !== 0 || !state.started || state.selectedArtwork) return;
+      if (
+        isCoarsePointer
+        || event.button !== 0
+        || !state.started
+        || state.selectedArtwork
+        || interactionBlocked
+      ) return;
       dragPointer.current = event.pointerId;
       lastPointerX.current = event.clientX;
       gl.domElement.setPointerCapture(event.pointerId);
       gl.domElement.style.cursor = "grabbing";
     };
     const onPointerMove = (event: PointerEvent) => {
-      if (dragPointer.current !== event.pointerId || selectedArtwork) return;
+      if (dragPointer.current !== event.pointerId || selectedArtwork || interactionBlocked) return;
       const dx = event.clientX - lastPointerX.current;
       lastPointerX.current = event.clientX;
       targetYaw.current += dx * DRAG_SENSITIVITY;
@@ -110,10 +144,10 @@ export function PlayerController({ moveInput, lookInput, isCoarsePointer }: Play
       gl.domElement.removeEventListener("pointerup", endDrag);
       gl.domElement.removeEventListener("pointercancel", endDrag);
     };
-  }, [gl.domElement, isCoarsePointer, selectArtwork, selectedArtwork]);
+  }, [gl.domElement, interactionBlocked, isCoarsePointer, selectArtwork, selectedArtwork]);
 
   useFrame((_, delta) => {
-    if (!started || selectedArtwork) return;
+    if (!started || selectedArtwork || interactionBlocked) return;
     const frameDelta = Math.min(delta, 0.05);
 
     if (isCoarsePointer) {
