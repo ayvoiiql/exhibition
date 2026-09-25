@@ -3,23 +3,28 @@ import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import type { MoveInput } from "../types";
 import { useGalleryStore } from "../store";
-import { roomACollisionBlocks, roomAWalkablePolygon } from "../galleryLayout";
+import {
+  galleryCollisionBlocks,
+  galleryWalkablePolygons,
+  getRoomIdAt,
+} from "../galleryLayout";
 
 interface PlayerControllerProps {
   moveInput: React.RefObject<MoveInput>;
   lookInput: React.RefObject<MoveInput>;
   isCoarsePointer: boolean;
+  interactionBlocked: boolean;
 }
 
 const DRAG_SENSITIVITY = 0.003;
 const KEYBOARD_TURN_SPEED = 1.65;
 const TURN_SMOOTHING = 14;
 
-function pointInPolygon(x: number, z: number) {
+function pointInPolygon(x: number, z: number, polygon: [number, number][]) {
   let inside = false;
-  for (let index = 0, previous = roomAWalkablePolygon.length - 1; index < roomAWalkablePolygon.length; previous = index++) {
-    const [xi, zi] = roomAWalkablePolygon[index];
-    const [xj, zj] = roomAWalkablePolygon[previous];
+  for (let index = 0, previous = polygon.length - 1; index < polygon.length; previous = index++) {
+    const [xi, zi] = polygon[index];
+    const [xj, zj] = polygon[previous];
     const crosses = zi > z !== zj > z && x < ((xj - xi) * (z - zi)) / (zj - zi) + xi;
     if (crosses) inside = !inside;
   }
@@ -27,18 +32,24 @@ function pointInPolygon(x: number, z: number) {
 }
 
 function isWalkable(x: number, z: number) {
-  if (!pointInPolygon(x, z)) return false;
-  return !roomACollisionBlocks.some(
+  if (!galleryWalkablePolygons.some((polygon) => pointInPolygon(x, z, polygon))) return false;
+  return !galleryCollisionBlocks.some(
     (block) => x >= block.minX && x <= block.maxX && z >= block.minZ && z <= block.maxZ,
   );
 }
 
-export function PlayerController({ moveInput, lookInput, isCoarsePointer }: PlayerControllerProps) {
+export function PlayerController({
+  moveInput,
+  lookInput,
+  isCoarsePointer,
+  interactionBlocked,
+}: PlayerControllerProps) {
   const { camera, gl, scene } = useThree();
   const started = useGalleryStore((state) => state.started);
   const selectedArtwork = useGalleryStore((state) => state.selectedArtwork);
   const selectArtwork = useGalleryStore((state) => state.selectArtwork);
   const setFocusedArtwork = useGalleryStore((state) => state.setFocusedArtwork);
+  const setCurrentRoom = useGalleryStore((state) => state.setCurrentRoom);
   const yaw = useRef(0);
   const targetYaw = useRef(0);
   const keys = useRef(new Set<string>());
@@ -54,7 +65,29 @@ export function PlayerController({ moveInput, lookInput, isCoarsePointer }: Play
   }, [camera]);
 
   useEffect(() => {
+    if (started && !interactionBlocked) return;
+    keys.current.clear();
+    moveInput.current.x = 0;
+    moveInput.current.y = 0;
+    lookInput.current.x = 0;
+    lookInput.current.y = 0;
+    if (dragPointer.current !== null) {
+      const pointerId = dragPointer.current;
+      if (gl.domElement.hasPointerCapture(pointerId)) {
+        gl.domElement.releasePointerCapture(pointerId);
+      }
+      dragPointer.current = null;
+      gl.domElement.style.cursor = "";
+    }
+  }, [gl.domElement, interactionBlocked, lookInput, moveInput, started]);
+
+  useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
+      if (!useGalleryStore.getState().started || interactionBlocked) {
+        keys.current.clear();
+        return;
+      }
+
       keys.current.add(event.code);
       if (event.code === "KeyE") {
         const artwork = useGalleryStore.getState().focusedArtwork;
@@ -64,14 +97,20 @@ export function PlayerController({ moveInput, lookInput, isCoarsePointer }: Play
     const onKeyUp = (event: KeyboardEvent) => keys.current.delete(event.code);
     const onPointerDown = (event: PointerEvent) => {
       const state = useGalleryStore.getState();
-      if (isCoarsePointer || event.button !== 0 || !state.started || state.selectedArtwork) return;
+      if (
+        isCoarsePointer
+        || event.button !== 0
+        || !state.started
+        || state.selectedArtwork
+        || interactionBlocked
+      ) return;
       dragPointer.current = event.pointerId;
       lastPointerX.current = event.clientX;
       gl.domElement.setPointerCapture(event.pointerId);
       gl.domElement.style.cursor = "grabbing";
     };
     const onPointerMove = (event: PointerEvent) => {
-      if (dragPointer.current !== event.pointerId || selectedArtwork) return;
+      if (dragPointer.current !== event.pointerId || selectedArtwork || interactionBlocked) return;
       const dx = event.clientX - lastPointerX.current;
       lastPointerX.current = event.clientX;
       targetYaw.current += dx * DRAG_SENSITIVITY;
@@ -105,10 +144,10 @@ export function PlayerController({ moveInput, lookInput, isCoarsePointer }: Play
       gl.domElement.removeEventListener("pointerup", endDrag);
       gl.domElement.removeEventListener("pointercancel", endDrag);
     };
-  }, [gl.domElement, isCoarsePointer, selectArtwork, selectedArtwork]);
+  }, [gl.domElement, interactionBlocked, isCoarsePointer, selectArtwork, selectedArtwork]);
 
   useFrame((_, delta) => {
-    if (!started || selectedArtwork) return;
+    if (!started || selectedArtwork || interactionBlocked) return;
     const frameDelta = Math.min(delta, 0.05);
 
     if (isCoarsePointer) {
@@ -152,8 +191,14 @@ export function PlayerController({ moveInput, lookInput, isCoarsePointer }: Play
     raycaster.current.far = 10.5;
     const hit = raycaster.current
       .intersectObjects(scene.children, true)
-      .find((intersection) => intersection.object.userData.artworkId);
+      .find(
+        (intersection) =>
+          intersection.object.userData.artworkId || intersection.object.userData.blocksArtworkRay,
+      );
     setFocusedArtwork(hit?.object.userData.artwork ?? null);
+
+    const currentRoom = getRoomIdAt(camera.position.x, camera.position.z);
+    if (useGalleryStore.getState().currentRoom !== currentRoom) setCurrentRoom(currentRoom);
   });
 
   return null;

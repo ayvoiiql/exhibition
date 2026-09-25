@@ -1,0 +1,74 @@
+.intro-screen {
+  position: absolute;
+  inset: 0;
+  z-index: 12;
+  overflow: auto;
+  background: #09121b;
+  color: #eee9df;
+  display: flex;
+  flex-direction: column;
+  padding: 0 clamp(26px, 5.4vw, 96px);
+}
+.intro-header { display: flex; align-items: center; justify-content: space-between; min-height: 106px; flex-shrink: 0; border-bottom: 1px solid #b9a27326; gap: 24px; }
+.intro-brand { display: flex; align-items: center; gap: 15px; color: #e5ded1; text-decoration: none; font-size: 9px; letter-spacing: 2px; line-height: 1.6; }
+.intro-monogram { font: italic 48px Georgia, serif; letter-spacing: -6px; padding-right: 6px; color: #c4ae84; }
+.intro-header-note { color: #8c979f; font-size: 11px; letter-spacing: 2px; }
+.intro-edition { color: #c6c8c7; font-size: 9px; letter-spacing: 2px; }
+.intro-edition span { color: #a39070; margin-left: 12px; }
+.intro-content { width: 100%; max-width: 1500px; margin: auto; display: grid; grid-template-columns: 46% 54%; flex: 1 0 auto; min-height: 580px; align-items: center; }
+.intro-copy { padding: 42px 26px 38px 0; z-index: 2; }
+.intro-kicker { display: flex; align-items: center; gap: 12px; color: #baa781; font-size: 10px; letter-spacing: 2.5px; margin: 0 0 28px; }
+.intro-kicker > span { width: 26px; height: 1px; background: #baa781; }
+.intro-copy h1 { font-family: "Batang", "Noto Serif KR", Georgia, serif; font-size: clamp(43px, 4.6vw, 76px); font-weight: 400; line-height: 1.27; letter-spacing: -3px; margin: 0; word-break: keep-all; }
+.intro-copy h1 > span { color: #cebd9c; }
+.intro-copy h1 i { color: #cebd9c; font-family: Georgia, serif; font-weight: 400; }
+.intro-description { color: #a9b0b5; white-space: pre-line; font-size: 13px; line-height: 1.95; margin: 24px 0 32px; word-break: keep-all; }
+.intro-artist { border-left: 1px solid #ae977347; padding-left: 20px; margin-bottom: 34px; }
+.intro-section-label { color: #b8a888; font-size: 9px; letter-spacing: 1.6px; margin: 0 0 12px; }
+.intro-section-label span { color: #81909d; letter-spacing: 0; padding-left: 12px; }
+.intro-artist h2 { font-size: 14px; font-weight: 500; margin: 0 0 8px; }
+.intro-artist > p:last-child { color: #929fa9; font-size: 11px; line-height: 1.9; white-space: pre-line; margin: 0; word-break: keep-all; }
+.intro-enter { width: min(100%, 350px); border: 1px solid #bca47a8c; background: linear-gradient(110deg, #bda37518, #bda37505); color: #e7ded0; display: flex; justify-content: space-between; align-items: center; padding: 18px 23px; text-align: left; cursor: pointer; transition: background 220ms, border-color 220ms; }
+.intro-enter:hover { background: #bda37526; border-color: #d2b984; }
+.intro-enter:focus-visible, .intro-brand:focus-visible { outline: 2px solid #e6d0a8; outline-offset: 6px; }
+.intro-enter > span:first-child { font-size: 13px; letter-spacing: 0.5px; }
+.intro-enter small { display: block; font-size: 8px; letter-spacing: 2px; color: #9f927b; margin-top: 7px; }
+.intro-arrow { font-size: 27px; font-weight: 200; color: #c9b58e; }
+.intro-enter:disabled { cursor: wait; opacity: 0.7; }
+.intro-invitation { font-size: 10px; color: #798792; margin: 13px 0 0; letter-spacing: 0.3px; }
+.intro-help { margin-top: 14px; max-width: 350px; font-size: 10px; color: #9ca8b1; line-height: 1.8; }
+.intro-help summary { cursor: pointer; width: fit-content; }
+.intro-help p { margin: 8px 0; }
+.intro-screen { scrollbar-width: thin; scrollbar-color: #48505a #09121b; }
+.intro-spinner { width: 18px; height: 18px; border: 1px solid #bba78044; border-top-color: #bba780; border-radius: 50%; animation: intro-spin 1s linear infinite; }
+@keyframes intro-spin { to { transform: rotate(360deg); } }
+.intro-architecture { position: relative; height: min(690px, 74vh); min-height: 540px; align-self: center; overflow: hidden; }
+.intro-architecture > div:has(canvas) { position: absolute !important; inset: 0; }
+.intro-architecture-shade { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(90deg, #09121b, transparent 16%, transparent 88%, #09121b), linear-gradient(0deg, #09121b, transparent 23%, transparent 85%, #09121b); }
+.intro-door-caption { position: absolute; top: 7%; width: 100%; text-align: center; font-size: 8px; letter-spacing: 4px; color: #b5a585; pointer-events: none; }
+.intro-architecture-foot { position: absolute; bottom: 6%; left: 17%; right: 13%; display: flex; justify-content: space-between; color: #81909c; font-size: 9px; letter-spacing: 1px; pointer-events: none; }
+.intro-door-fallback { position: absolute; inset: 16% 20% 17%; display: flex; border: 1px solid #a28c63; padding: 6px; background: #0b1118; }
+.intro-door-fallback span { flex: 1; background: linear-gradient(120deg, #223342, #13212d); border: 1px solid #68705c44; }
+.intro-footer { display: flex; align-items: center; justify-content: space-between; min-height: 70px; flex-shrink: 0; border-top: 1px solid #b9a27326; gap: 16px; font-size: 9px; color: #89959e; letter-spacing: 1.4px; }
+.intro-footer > span:first-child { display: flex; align-items: center; gap: 12px; }
+.intro-footer i { width: 2px; height: 2px; background: #ac9977; }
+.intro-room-index { color: #c9b894; letter-spacing: 2px; }
+.intro-room-index b { color: #54616c; padding: 0 15px; font-weight: 300; }
+@media (max-width: 760px) {
+  .intro-header { min-height: 78px; }
+  .intro-header-note { display: none; }
+  .intro-edition { font-size: 7px; letter-spacing: 1px; }
+  .intro-edition span { margin-left: 4px; }
+  .intro-brand { font-size: 7px; gap: 10px; }
+  .intro-monogram { font-size: 36px; }
+  .intro-content { display: flex; flex-direction: column; min-height: 0; }
+  .intro-copy { width: 100%; padding: 10px 0 24px; }
+  .intro-kicker { margin-bottom: 19px; font-size: 8px; }
+  .intro-copy h1 { font-size: clamp(39px, 9vw, 58px); line-height: 1.23; letter-spacing: -2px; }
+  .intro-description { font-size: 12px; margin: 18px 0 24px; }
+  .intro-artist { margin-bottom: 25px; padding-left: 16px; }
+  .intro-enter { width: 100%; }
+  .intro-architecture { order: -1; width: 100%; height: 260px; min-height: 0; margin-top: 4px; }
+  .intro-footer { flex-wrap: wrap; padding: 22px 0 max(22px, env(safe-area-inset-bottom)); gap: 18px; font-size: 8px; }
+  .intro-room-index { display: none; }
+}

@@ -6,7 +6,9 @@ import { ARTWORK_MAX_DIMENSION } from "../src/renderQuality.ts";
 
 const root = process.cwd();
 const contentPath = path.join(root, "content", "artworks.json");
-const artworks = JSON.parse(await readFile(contentPath, "utf8"));
+const artworks = JSON.parse(await readFile(contentPath, "utf8")).filter(
+  (artwork) => artwork.roomId === "A",
+);
 
 if (!Array.isArray(artworks) || artworks.length !== 8) {
   throw new Error("Room A must contain exactly eight artworks.");
